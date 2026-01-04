@@ -1,0 +1,2105 @@
+{
+	"info": {
+		"_postman_id": "zuanga-api-collection",
+		"name": "Zuanga API - Complete",
+		"description": "Complete collection for testing Zuanga School Transportation API - Authentication, User Management, and Driver endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/health",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"health"
+					]
+				},
+				"description": "Check if the API server is running"
+			}
+		},
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Register Parent",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('access_token', jsonData.data.tokens.access_token);",
+									"    pm.environment.set('refresh_token', jsonData.data.tokens.refresh_token);",
+									"    pm.environment.set('user_id', jsonData.data.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"parent@test.com\",\n  \"phone\": \"+1234567890\",\n  \"password\": \"Test1234\",\n  \"first_name\": \"John\",\n  \"last_name\": \"Parent\",\n  \"role\": \"PARENT\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new parent user"
+					}
+				},
+				{
+					"name": "Register Driver",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('driver_access_token', jsonData.data.tokens.access_token);",
+									"    pm.environment.set('driver_refresh_token', jsonData.data.tokens.refresh_token);",
+									"    pm.environment.set('driver_id', jsonData.data.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"driver@test.com\",\n  \"phone\": \"+1234567891\",\n  \"password\": \"Driver1234\",\n  \"first_name\": \"Jane\",\n  \"last_name\": \"Driver\",\n  \"role\": \"DRIVER\",\n  \"license_number\": \"DL123456\",\n  \"vehicle_make\": \"Toyota\",\n  \"vehicle_model\": \"Camry\",\n  \"vehicle_color\": \"Blue\",\n  \"vehicle_plate_number\": \"ABC123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new driver user (requires license_number)"
+					}
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('access_token', jsonData.data.tokens.access_token);",
+									"    pm.environment.set('refresh_token', jsonData.data.tokens.refresh_token);",
+									"    pm.environment.set('user_id', jsonData.data.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"parent@test.com\",\n  \"password\": \"Test1234\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with email and password"
+					}
+				},
+				{
+					"name": "Get Current User (Me)",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/auth/me",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"me"
+							]
+						},
+						"description": "Get current authenticated user profile"
+					}
+				},
+				{
+					"name": "Refresh Token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('access_token', jsonData.data.access_token);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"refresh_token\": \"{{refresh_token}}\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/refresh",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "Refresh access token using refresh token"
+					}
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "Get Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"profile"
+							]
+						},
+						"description": "Get current user profile"
+					}
+				},
+				{
+					"name": "Update Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"John Updated\",\n  \"last_name\": \"Parent Updated\",\n  \"phone\": \"+1234567890\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/profile",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"profile"
+							]
+						},
+						"description": "Update current user profile"
+					}
+				},
+				{
+					"name": "Add Kid",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('kid_id', jsonData.data.kid.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"school_id\": \"{{school_id}}\",\n  \"first_name\": \"Emma\",\n  \"last_name\": \"Parent\",\n  \"date_of_birth\": \"2015-05-15\",\n  \"grade\": \"3rd Grade\",\n  \"pickup_address\": \"123 Main St, City, State\",\n  \"pickup_latitude\": 40.7128,\n  \"pickup_longitude\": -74.0060,\n  \"dropoff_address\": \"456 School Ave, City, State\",\n  \"dropoff_latitude\": 40.7580,\n  \"dropoff_longitude\": -73.9855,\n  \"emergency_contact_name\": \"Emergency Contact\",\n  \"emergency_contact_phone\": \"+1987654321\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/kids",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"kids"
+							]
+						},
+						"description": "Add a new kid (parent only) - Requires school_id"
+					}
+				},
+				{
+					"name": "List Kids",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/kids?active=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"kids"
+							],
+							"query": [
+								{
+									"key": "active",
+									"value": "true",
+									"description": "Filter active kids only"
+								}
+							]
+						},
+						"description": "List all kids for the current parent"
+					}
+				},
+				{
+					"name": "Get Kid by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/kids/{{kid_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"kids",
+								"{{kid_id}}"
+							]
+						},
+						"description": "Get kid details by ID"
+					}
+				},
+				{
+					"name": "Update Kid",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"Emma Updated\",\n  \"grade\": \"4th Grade\",\n  \"pickup_address\": \"789 New St, City, State\",\n  \"pickup_latitude\": 40.7200,\n  \"pickup_longitude\": -74.0100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/kids/{{kid_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"kids",
+								"{{kid_id}}"
+							]
+						},
+						"description": "Update kid information"
+					}
+				},
+				{
+					"name": "Delete Kid",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/users/kids/{{kid_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"kids",
+								"{{kid_id}}"
+							]
+						},
+						"description": "Delete kid (soft delete - sets is_active to false)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Drivers",
+			"item": [
+				{
+					"name": "List Drivers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/drivers?available=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"drivers"
+							],
+							"query": [
+								{
+									"key": "available",
+									"value": "true",
+									"description": "Filter only available drivers"
+								}
+							]
+						},
+						"description": "List all drivers (optionally filter by availability)"
+					}
+				},
+				{
+					"name": "Get Driver by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/drivers/{{driver_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"drivers",
+								"{{driver_id}}"
+							]
+						},
+						"description": "Get driver details by ID"
+					}
+				},
+				{
+					"name": "Update Driver Status",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driver_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"is_available\": true,\n  \"current_latitude\": 40.7128,\n  \"current_longitude\": -74.0060\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/drivers/status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"drivers",
+								"status"
+							]
+						},
+						"description": "Update driver availability and current location (driver only)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Schools",
+			"item": [
+				{
+					"name": "List Schools",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/schools?active=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"schools"
+							],
+							"query": [
+								{
+									"key": "active",
+									"value": "true",
+									"description": "Filter only active schools"
+								}
+							]
+						},
+						"description": "List all schools (no authentication required)"
+					}
+				},
+				{
+					"name": "Get School by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('school_id', jsonData.data.school.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/schools/{{school_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"schools",
+								"{{school_id}}"
+							]
+						},
+						"description": "Get school details by ID (auto-saves school_id)"
+					}
+				},
+				{
+					"name": "Create School",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('school_id', jsonData.data.school.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Lincoln Elementary School\",\n  \"address\": \"123 Education Ave\",\n  \"city\": \"New York\",\n  \"state\": \"NY\",\n  \"country\": \"US\",\n  \"postal_code\": \"10001\",\n  \"latitude\": 40.7580,\n  \"longitude\": -73.9855,\n  \"phone\": \"+12125551234\",\n  \"email\": \"info@lincolnelem.edu\",\n  \"website\": \"https://lincolnelem.edu\",\n  \"start_time\": \"08:00:00\",\n  \"end_time\": \"15:00:00\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/schools",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"schools"
+							]
+						},
+						"description": "Create a new school (admin or parent)"
+					}
+				},
+				{
+					"name": "Update School",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Lincoln Elementary School Updated\",\n  \"phone\": \"+12125559999\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/schools/{{school_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"schools",
+								"{{school_id}}"
+							]
+						},
+						"description": "Update school information (admin or parent)"
+					}
+				},
+				{
+					"name": "Delete School",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/schools/{{school_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"schools",
+								"{{school_id}}"
+							]
+						},
+						"description": "Delete school (admin or parent - soft delete)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Rides",
+			"item": [
+				{
+					"name": "Book Ride",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('ride_id', jsonData.data.ride.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"kid_id\": \"{{kid_id}}\",\n  \"ride_type\": \"TO_SCHOOL\",\n  \"scheduled_pickup_time\": \"2024-12-25T08:00:00Z\",\n  \"scheduled_dropoff_time\": \"2024-12-25T08:30:00Z\",\n  \"pickup_address\": \"123 Main St, City, State\",\n  \"pickup_latitude\": 40.7128,\n  \"pickup_longitude\": -74.0060,\n  \"dropoff_address\": \"456 School Ave, City, State\",\n  \"dropoff_latitude\": 40.7580,\n  \"dropoff_longitude\": -73.9855,\n  \"base_fare\": 5.00,\n  \"distance_fare\": 3.50,\n  \"total_fare\": 8.50,\n  \"parent_notes\": \"Please be on time\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/rides",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"rides"
+							]
+						},
+						"description": "Book a one-time ride (parent or admin) - For regular rides, use subscriptions instead - Requires kid_id"
+					}
+				},
+				{
+					"name": "List Rides",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/rides?status=PENDING",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"rides"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "PENDING",
+									"description": "Filter by status (for drivers)"
+								}
+							]
+						},
+						"description": "List rides (filtered by user role: parent sees kids' rides, driver sees assigned rides)"
+					}
+				},
+				{
+					"name": "Get Ride by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/rides/{{ride_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"rides",
+								"{{ride_id}}"
+							]
+						},
+						"description": "Get ride details by ID"
+					}
+				},
+				{
+					"name": "Accept Ride",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driver_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/rides/{{ride_id}}/accept",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"rides",
+								"{{ride_id}}",
+								"accept"
+							]
+						},
+						"description": "Driver accepts a ride (driver only)"
+					}
+				},
+				{
+					"name": "Start Ride",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driver_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/rides/{{ride_id}}/start",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"rides",
+								"{{ride_id}}",
+								"start"
+							]
+						},
+						"description": "Driver starts the ride (driver only)"
+					}
+				},
+				{
+					"name": "Mark Picked Up",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driver_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/rides/{{ride_id}}/pickup",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"rides",
+								"{{ride_id}}",
+								"pickup"
+							]
+						},
+						"description": "Driver marks kid as picked up (driver only)"
+					}
+				},
+				{
+					"name": "Complete Ride",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driver_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/rides/{{ride_id}}/complete",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"rides",
+								"{{ride_id}}",
+								"complete"
+							]
+						},
+						"description": "Driver completes the ride (driver only)"
+					}
+				},
+				{
+					"name": "Cancel Ride",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"cancellation_reason\": \"Change of plans\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/rides/{{ride_id}}/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"rides",
+								"{{ride_id}}",
+								"cancel"
+							]
+						},
+						"description": "Cancel a ride (parent or driver)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Routes",
+			"item": [
+				{
+					"name": "List Routes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/routes?active=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"routes"
+							],
+							"query": [
+								{
+									"key": "active",
+									"value": "true",
+									"description": "Filter only active routes"
+								},
+								{
+									"key": "school_id",
+									"value": "{{school_id}}",
+									"description": "Filter by school ID (optional)",
+									"disabled": true
+								},
+								{
+									"key": "driver_id",
+									"value": "{{driver_id}}",
+									"description": "Filter by driver ID (optional)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "List all routes (optionally filtered by school or driver)"
+					}
+				},
+				{
+					"name": "Get Route by ID",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('route_id', jsonData.data.route.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/routes/{{route_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"routes",
+								"{{route_id}}"
+							]
+						},
+						"description": "Get route details by ID (auto-saves route_id)"
+					}
+				},
+				{
+					"name": "Create Route",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('route_id', jsonData.data.route.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driver_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"school_id\": \"{{school_id}}\",\n  \"driver_id\": \"{{driver_id}}\",\n  \"name\": \"Morning Route - Lincoln Elementary\",\n  \"description\": \"Daily morning pickup route\",\n  \"waypoints\": [\n    {\n      \"latitude\": 40.7128,\n      \"longitude\": -74.0060,\n      \"address\": \"123 Main St, City, State\"\n    },\n    {\n      \"latitude\": 40.7200,\n      \"longitude\": -74.0100,\n      \"address\": \"456 Oak Ave, City, State\"\n    }\n  ],\n  \"estimated_distance_km\": 5.2,\n  \"estimated_duration_minutes\": 15\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/routes",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"routes"
+							]
+						},
+						"description": "Create a new route (admin or parent) - Requires school_id"
+					}
+				},
+				{
+					"name": "Optimize Route",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('route_id', jsonData.data.route.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driver_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"school_id\": \"{{school_id}}\",\n  \"driver_id\": \"{{driver_id}}\",\n  \"name\": \"Optimized Morning Route\",\n  \"description\": \"Optimized route for multiple pickups\",\n  \"waypoints\": [\n    {\n      \"latitude\": 40.7128,\n      \"longitude\": -74.0060,\n      \"address\": \"123 Main St, City, State\"\n    },\n    {\n      \"latitude\": 40.7200,\n      \"longitude\": -74.0100,\n      \"address\": \"456 Oak Ave, City, State\"\n    },\n    {\n      \"latitude\": 40.7150,\n      \"longitude\": -74.0080,\n      \"address\": \"789 Pine St, City, State\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/routes/optimize",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"routes",
+								"optimize"
+							]
+						},
+						"description": "Optimize route for multiple pickups using Nearest Neighbor algorithm (admin or parent) - Automatically calculates distance and duration"
+					}
+				},
+				{
+					"name": "Update Route",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{driver_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"Updated Morning Route\",\n  \"description\": \"Updated route description\",\n  \"waypoints\": [\n    {\n      \"latitude\": 40.7128,\n      \"longitude\": -74.0060,\n      \"address\": \"123 Main St, City, State\"\n    },\n    {\n      \"latitude\": 40.7200,\n      \"longitude\": -74.0100,\n      \"address\": \"456 Oak Ave, City, State\"\n    }\n  ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/routes/{{route_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"routes",
+								"{{route_id}}"
+							]
+						},
+						"description": "Update route information (admin or parent) - Distance and duration are recalculated if waypoints are updated"
+					}
+				},
+				{
+					"name": "Delete Route",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/routes/{{route_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"routes",
+								"{{route_id}}"
+							]
+						},
+						"description": "Delete route (admin or parent - soft delete)"
+					}
+				},
+				{
+					"name": "Get Routes by School",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/routes/school/{{school_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"routes",
+								"school",
+								"{{school_id}}"
+							]
+						},
+						"description": "Get all routes for a specific school"
+					}
+				},
+				{
+					"name": "Get Routes by Driver",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/routes/driver/{{driver_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"routes",
+								"driver",
+								"{{driver_id}}"
+							]
+						},
+						"description": "Get all routes for a specific driver"
+					}
+				}
+			]
+		},
+		{
+			"name": "Subscriptions",
+			"item": [
+				{
+					"name": "Create Subscription",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('subscription_id', jsonData.data.subscription.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"kid_id\": \"{{kid_id}}\",\n  \"school_id\": \"{{school_id}}\",\n  \"subscription_type\": \"WEEKLY\",\n  \"start_date\": \"2024-12-25\",\n  \"end_date\": \"2025-03-25\",\n  \"days_of_week\": [1, 2, 3, 4, 5],\n  \"pickup_time\": \"08:00\",\n  \"dropoff_time\": \"15:30\",\n  \"pickup_address\": \"123 Home St, City, State\",\n  \"pickup_latitude\": 40.7128,\n  \"pickup_longitude\": -74.0060,\n  \"dropoff_address\": \"456 School Ave, City, State\",\n  \"dropoff_latitude\": 40.7580,\n  \"dropoff_longitude\": -73.9855,\n  \"base_fare\": 5.00,\n  \"distance_fare\": 3.50,\n  \"total_fare_per_ride\": 8.50,\n  \"parent_notes\": \"Please be on time\",\n  \"auto_generate_rides\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions"
+							]
+						},
+						"description": "Create a weekly or monthly subscription for automatic ride generation (parent or admin)"
+					}
+				},
+				{
+					"name": "List Subscriptions",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions?active=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions"
+							],
+							"query": [
+								{
+									"key": "active",
+									"value": "true",
+									"description": "Filter by active subscriptions only"
+								}
+							]
+						},
+						"description": "Get all subscriptions for current parent (parent or admin)"
+					}
+				},
+				{
+					"name": "Get Subscription by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/{{subscription_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"{{subscription_id}}"
+							]
+						},
+						"description": "Get subscription details by ID (parent or admin)"
+					}
+				},
+				{
+					"name": "Update Subscription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"pickup_time\": \"07:45\",\n  \"days_of_week\": [1, 2, 3, 4],\n  \"parent_notes\": \"Updated schedule\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions/{{subscription_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"{{subscription_id}}"
+							]
+						},
+						"description": "Update subscription details (parent or admin)"
+					}
+				},
+				{
+					"name": "Pause Subscription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/{{subscription_id}}/pause",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"{{subscription_id}}",
+								"pause"
+							]
+						},
+						"description": "Pause an active subscription (parent or admin)"
+					}
+				},
+				{
+					"name": "Resume Subscription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/{{subscription_id}}/resume",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"{{subscription_id}}",
+								"resume"
+							]
+						},
+						"description": "Resume a paused subscription (parent or admin)"
+					}
+				},
+				{
+					"name": "Cancel Subscription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/subscriptions/{{subscription_id}}/cancel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"{{subscription_id}}",
+								"cancel"
+							]
+						},
+						"description": "Cancel a subscription (parent or admin)"
+					}
+				},
+				{
+					"name": "Generate Rides for Subscription",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"up_to_date\": \"2025-01-31\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/subscriptions/{{subscription_id}}/generate-rides",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"subscriptions",
+								"{{subscription_id}}",
+								"generate-rides"
+							]
+						},
+						"description": "Manually generate rides for a subscription up to a specific date (parent or admin)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Tracking",
+			"item": [
+				{
+					"name": "Update Driver Location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"latitude\": 40.7128,\n  \"longitude\": -74.0060,\n  \"accuracy\": 10,\n  \"heading\": 45,\n  \"speed\": 50\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/tracking/{{ride_id}}/location",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tracking",
+								"{{ride_id}}",
+								"location"
+							]
+						},
+						"description": "Update driver location for a ride (driver only)"
+					}
+				},
+				{
+					"name": "Get Current Location",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tracking/{{ride_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tracking",
+								"{{ride_id}}"
+							]
+						},
+						"description": "Get current ride location (parent, driver, or admin)"
+					}
+				},
+				{
+					"name": "Get Location History",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/tracking/{{ride_id}}/history?limit=100",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"tracking",
+								"{{ride_id}}",
+								"history"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "100",
+									"description": "Limit number of location points"
+								}
+							]
+						},
+						"description": "Get location history for a ride (parent, driver, or admin)"
+					}
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "Register Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    const jsonData = pm.response.json();",
+									"    pm.environment.set('admin_access_token', jsonData.data.tokens.access_token);",
+									"    pm.environment.set('admin_refresh_token', jsonData.data.tokens.refresh_token);",
+									"    pm.environment.set('admin_user_id', jsonData.data.user.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"admin@zuanga.com\",\n  \"password\": \"Admin1234!\",\n  \"phone\": \"+1234567899\",\n  \"first_name\": \"Admin\",\n  \"last_name\": \"User\",\n  \"role\": \"ADMIN\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/auth/register",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new admin account"
+					}
+				},
+				{
+					"name": "Get All Users",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/users?role=PARENT&active=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"users"
+							],
+							"query": [
+								{
+									"key": "role",
+									"value": "PARENT",
+									"description": "Filter by role (PARENT, DRIVER, ADMIN)",
+									"disabled": true
+								},
+								{
+									"key": "active",
+									"value": "true",
+									"description": "Filter by active status",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all users (parents and drivers) - Admin only"
+					}
+				},
+				{
+					"name": "Get User by ID",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{{user_id}}"
+							]
+						},
+						"description": "Get user details by ID - Admin only"
+					}
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"first_name\": \"Updated Name\",\n  \"phone\": \"+1234567890\",\n  \"is_active\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/admin/users/{{user_id}}",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{{user_id}}"
+							]
+						},
+						"description": "Update user account - Admin only"
+					}
+				},
+				{
+					"name": "Deactivate User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/users/{{user_id}}/deactivate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{{user_id}}",
+								"deactivate"
+							]
+						},
+						"description": "Deactivate user account (soft delete) - Admin only"
+					}
+				},
+				{
+					"name": "Activate User",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/users/{{user_id}}/activate",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"users",
+								"{{user_id}}",
+								"activate"
+							]
+						},
+						"description": "Activate user account - Admin only"
+					}
+				},
+				{
+					"name": "Get All Parents",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/parents?active=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"parents"
+							],
+							"query": [
+								{
+									"key": "active",
+									"value": "true",
+									"description": "Filter by active status",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all parent accounts - Admin only"
+					}
+				},
+				{
+					"name": "Get All Drivers",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/drivers?active=true",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"drivers"
+							],
+							"query": [
+								{
+									"key": "active",
+									"value": "true",
+									"description": "Filter by active status",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Get all driver accounts - Admin only"
+					}
+				},
+				{
+					"name": "Get User Statistics",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{admin_access_token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{base_url}}/admin/stats",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"admin",
+								"stats"
+							]
+						},
+						"description": "Get user statistics (total users, parents, drivers, etc.) - Admin only"
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/api/v1",
+			"type": "string"
+		}
+	]
+}
