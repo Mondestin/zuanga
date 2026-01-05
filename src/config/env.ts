@@ -16,10 +16,9 @@ export const config = {
   apiVersion: process.env.API_VERSION || 'v1',
   apiPrefix: `/api/${process.env.API_VERSION || 'v1'}`,
   
-  // Database configuration (for migrations only)
+  // Database configuration
   databaseUrl: process.env.DATABASE_URL || '',
   
-
   // JWT configuration
   jwtSecret: process.env.JWT_SECRET || '',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
@@ -43,7 +42,7 @@ export const config = {
 export function validateConfig(): void {
   const required: string[] = [];
   
-  // Supabase configuration is required for REST API
+  // Database URL is required
   if (!process.env.DATABASE_URL) {
     required.push('DATABASE_URL');
   }
