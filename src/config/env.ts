@@ -19,10 +19,7 @@ export const config = {
   // Database configuration (for migrations only)
   databaseUrl: process.env.DATABASE_URL || '',
   
-  // Supabase REST API configuration
-  supabaseUrl: process.env.SUPABASE_URL || '',
-  supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
-  
+
   // JWT configuration
   jwtSecret: process.env.JWT_SECRET || '',
   jwtExpiresIn: process.env.JWT_EXPIRES_IN || '24h',
@@ -47,14 +44,9 @@ export function validateConfig(): void {
   const required: string[] = [];
   
   // Supabase configuration is required for REST API
-  if (!process.env.SUPABASE_URL) {
-    required.push('SUPABASE_URL');
+  if (!process.env.DATABASE_URL) {
+    required.push('DATABASE_URL');
   }
-  
-  if (!process.env.SUPABASE_ANON_KEY) {
-    required.push('SUPABASE_ANON_KEY');
-  }
-  
   // JWT Secret is required
   if (!process.env.JWT_SECRET) {
     required.push('JWT_SECRET');
