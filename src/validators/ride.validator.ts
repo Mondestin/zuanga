@@ -5,9 +5,10 @@ import { z } from 'zod';
  */
 export const createRideSchema = z.object({
   kid_id: z.string().uuid('Invalid kid ID'),
-  ride_type: z.enum(['TO_SCHOOL', 'FROM_SCHOOL'], {
-    errorMap: () => ({ message: 'Ride type must be TO_SCHOOL or FROM_SCHOOL' }),
-  }),
+  ride_type: z.enum(['TO_SCHOOL', 'FROM_SCHOOL']).refine(
+    (val) => ['TO_SCHOOL', 'FROM_SCHOOL'].includes(val),
+    { message: 'Ride type must be TO_SCHOOL or FROM_SCHOOL' }
+  ),
   scheduled_pickup_time: z.string().datetime('Invalid datetime format'),
   scheduled_dropoff_time: z.string().datetime().optional(),
   pickup_address: z.string().min(1, 'Pickup address is required'),

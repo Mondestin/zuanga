@@ -1,9 +1,9 @@
 import { SubscriptionModel, Subscription, CreateSubscriptionInput, UpdateSubscriptionInput, SubscriptionType, SubscriptionStatus } from '../models/Subscription';
 import { KidModel } from '../models/Kid';
 import { SchoolModel } from '../models/School';
-import { UserModel, UserRole } from '../models/User';
+import { UserRole } from '../models/User';
 import { RideService } from './ride.service';
-import { RideModel, RideType } from '../models/Ride';
+import { RideType } from '../models/Ride';
 
 /**
  * Subscription Service
@@ -184,7 +184,7 @@ export class SubscriptionService {
               kid_id: subscription.kid_id,
               ride_type: rideType,
               scheduled_pickup_time: scheduledPickupTime.toISOString(),
-              scheduled_dropoff_time: scheduledDropoffTime?.toISOString() || null,
+              scheduled_dropoff_time: scheduledDropoffTime?.toISOString() || undefined,
               pickup_address: subscription.pickup_address,
               pickup_latitude: subscription.pickup_latitude,
               pickup_longitude: subscription.pickup_longitude,
@@ -192,9 +192,9 @@ export class SubscriptionService {
               dropoff_latitude: subscription.dropoff_latitude,
               dropoff_longitude: subscription.dropoff_longitude,
               base_fare: subscription.base_fare,
-              distance_fare: subscription.distance_fare,
+              distance_fare: subscription.distance_fare ?? undefined,
               total_fare: subscription.total_fare_per_ride,
-              parent_notes: subscription.parent_notes,
+              parent_notes: subscription.parent_notes ?? undefined,
               subscription_id: subscription.id,
             },
             subscription.parent_id,
@@ -217,10 +217,10 @@ export class SubscriptionService {
   /**
    * Find existing ride for a specific date and time
    */
-  private static async findRideForDate(kidId: string, date: Date, pickupTime: string): Promise<any> {
-    const startOfDay = new Date(date);
+  private static async findRideForDate(_kidId: string, _date: Date, _pickupTime: string): Promise<any> {
+    const startOfDay = new Date(_date);
     startOfDay.setHours(0, 0, 0, 0);
-    const endOfDay = new Date(date);
+    const endOfDay = new Date(_date);
     endOfDay.setHours(23, 59, 59, 999);
 
     // This would need to be implemented in RideModel

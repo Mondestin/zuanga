@@ -26,7 +26,7 @@ export function generateAccessToken(payload: JWTPayload): string {
     expiresIn,
     issuer: 'zuanga-api',
     audience: 'zuanga-app',
-  });
+  } as jwt.SignOptions);
 }
 
 /**
@@ -44,7 +44,7 @@ export function generateRefreshToken(payload: JWTPayload): string {
     expiresIn: refreshExpiresIn,
     issuer: 'zuanga-api',
     audience: 'zuanga-app',
-  });
+  } as jwt.SignOptions);
 }
 
 /**

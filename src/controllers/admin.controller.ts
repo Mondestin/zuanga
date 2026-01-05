@@ -273,7 +273,7 @@ export class AdminController {
    * Get user statistics
    * GET /api/v1/admin/stats
    */
-  static async getUserStats(req: Request, res: Response): Promise<void> {
+  static async getUserStats(_req: Request, res: Response): Promise<void> {
     try {
       const stats = await AdminService.getUserStats();
 

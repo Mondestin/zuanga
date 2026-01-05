@@ -9,9 +9,10 @@ export const registerSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
   first_name: z.string().min(1, 'First name is required').max(100),
   last_name: z.string().min(1, 'Last name is required').max(100),
-  role: z.enum(['PARENT', 'DRIVER', 'ADMIN'], {
-    errorMap: () => ({ message: 'Role must be PARENT, DRIVER, or ADMIN' }),
-  }),
+  role: z.enum(['PARENT', 'DRIVER', 'ADMIN']).refine(
+    (val) => ['PARENT', 'DRIVER', 'ADMIN'].includes(val),
+    { message: 'Role must be PARENT, DRIVER, or ADMIN' }
+  ),
   // Driver-specific fields (only allowed for DRIVER role)
   license_number: z.string().optional(),
   vehicle_make: z.string().optional(),

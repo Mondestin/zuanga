@@ -63,7 +63,7 @@ export interface CreateRideInput {
   kid_id: string;
   ride_type: RideType;
   scheduled_pickup_time: Date | string;
-  scheduled_dropoff_time?: Date | string;
+  scheduled_dropoff_time?: Date | string | null;
   pickup_address: string;
   pickup_latitude: number;
   pickup_longitude: number;
@@ -71,10 +71,11 @@ export interface CreateRideInput {
   dropoff_latitude: number;
   dropoff_longitude: number;
   base_fare: number;
-  distance_fare?: number;
+  distance_fare?: number | null;
   total_fare: number;
-  parent_notes?: string;
+  parent_notes?: string | null;
   route_id?: string;
+  subscription_id?: string;
 }
 
 /**
@@ -92,6 +93,7 @@ export interface UpdateRideInput {
   duration_minutes?: number;
   driver_notes?: string;
   cancelled_by?: string | null;
+  cancelled_at?: Date | string;
   cancellation_reason?: string | null;
 }
 
@@ -224,8 +226,19 @@ export class RideModel {
     if (input.cancelled_by !== undefined) {
       updates.push(`cancelled_by = $${paramIndex++}`);
       values.push(input.cancelled_by);
-      if (!input.cancelled_at) {
+      if (input.cancelled_at === undefined) {
         updates.push(`cancelled_at = CURRENT_TIMESTAMP`);
+      } else if (input.cancelled_at !== null) {
+        updates.push(`cancelled_at = $${paramIndex++}`);
+        values.push(input.cancelled_at);
+      }
+    }
+    if (input.cancelled_at !== undefined && input.cancelled_by === undefined) {
+      if (input.cancelled_at !== null) {
+        updates.push(`cancelled_at = $${paramIndex++}`);
+        values.push(input.cancelled_at);
+      } else {
+        updates.push(`cancelled_at = NULL`);
       }
     }
     if (input.cancellation_reason !== undefined) {
