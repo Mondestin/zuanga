@@ -3,6 +3,7 @@ import { config } from './config/env';
 import { setupSecurity } from './middleware/security';
 import { requestLogger } from './middleware/logger';
 import v1Routes from './routes/v1';
+import { setupSwagger } from './docs/swagger';
 
 /**
  * Create and configure Express application
@@ -22,6 +23,10 @@ export function createApp(): Express {
 
   // Security middleware
   setupSecurity(app);
+
+  // Swagger (OpenAPI) docs
+  // Common URL: /api/v1/docs (and /api/v1/openapi.json)
+  setupSwagger(app, config.apiPrefix);
 
   // API routes
   app.use(config.apiPrefix, v1Routes);

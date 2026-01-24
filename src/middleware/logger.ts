@@ -27,6 +27,16 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
     if (sanitizedBody.access_token) {
       sanitizedBody.access_token = '***';
     }
+    // OTP / verification codes should never be logged
+    if (sanitizedBody.code) {
+      sanitizedBody.code = '***';
+    }
+    if (sanitizedBody.otp) {
+      sanitizedBody.otp = '***';
+    }
+    if (sanitizedBody.verification_code) {
+      sanitizedBody.verification_code = '***';
+    }
     console.log(`  Body:`, JSON.stringify(sanitizedBody, null, 2));
   }
 

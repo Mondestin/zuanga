@@ -33,8 +33,10 @@ npm install
 Copy the example environment file and configure as needed:
 
 ```bash
-cp .env.example .env
+cp env.example .env
 ```
+
+NOTE: This workspace blocks committing dotfiles like `.env.example`, so the template is provided as `env.example`.
 
 ### Development
 
@@ -69,6 +71,13 @@ GET /api/v1/health
 ```
 
 Returns server health status, uptime, and environment information.
+
+## API Documentation (Swagger)
+
+- Swagger UI: `/api/v1/docs`
+- OpenAPI JSON: `/api/v1/openapi.json`
+
+Swagger “Servers” includes Local plus a Hosted option with `environment=sandbox|api` (production).
 
 **Response:**
 ```json
@@ -125,6 +134,9 @@ Returns server health status, uptime, and environment information.
 | `RATE_LIMIT_MAX` | Max requests per window | `100` |
 | `LOG_LEVEL` | Logging level (error/warn/info/http/debug) | `warn` (prod) / `debug` (dev) |
 | `LOG_DIR` | Directory for log files | `logs` |
+| `VONAGE_API_KEY` | Vonage API key (OTP/Verify) | |
+| `VONAGE_API_SECRET` | Vonage API secret (OTP/Verify) | |
+| `VONAGE_BRAND` | SMS brand/sender name (OTP/Verify) | `Zuanga` |
 
 ## Logging
 

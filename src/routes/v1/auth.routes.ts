@@ -3,6 +3,7 @@ import { AuthController } from '../../controllers/auth.controller';
 import { validate } from '../../middleware/validator';
 import { registerSchema, loginSchema, refreshTokenSchema } from '../../validators/auth.validator';
 import { authenticate, loadUser } from '../../auth/middleware';
+import otpRoutes from './otp.routes';
 
 const router = Router();
 
@@ -29,5 +30,11 @@ router.post('/refresh', validate(refreshTokenSchema), AuthController.refreshToke
  * GET /api/v1/auth/me
  */
 router.get('/me', authenticate, loadUser, AuthController.getCurrentUser);
+
+/**
+ * OTP (One-Time Password) routes (Vonage Verify)
+ * Mounted under /api/v1/auth/otp/*
+ */
+router.use('/otp', otpRoutes);
 
 export default router;
